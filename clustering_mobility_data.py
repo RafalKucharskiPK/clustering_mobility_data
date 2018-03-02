@@ -23,8 +23,8 @@ from sklearn.cluster import AgglomerativeClustering
 from scipy.spatial.distance import cosine
 
 PLOTLY_API_KEY = "w1LROCX3bYA8amfuLA4g"
-DAYS_PATH_IN = "days.csv"
-CLUSTERED_DAYS_PATH_OUT = "clustered_days.csv"
+DAYS_PATH_IN = "days_in.csv"
+CLUSTERED_DAYS_PATH_OUT = "days_out.csv"
 
 
 # UTILS
