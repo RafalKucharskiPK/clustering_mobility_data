@@ -22,9 +22,9 @@ from sklearn import metrics
 from sklearn.cluster import AgglomerativeClustering
 from scipy.spatial.distance import cosine
 
-
 PLOTLY_API_KEY = "w1LROCX3bYA8amfuLA4g"
-DB_PATH = "/Users/rafal/Google Drive/data/store.h5"
+DAYS_PATH_IN = "days.csv"
+CLUSTERED_DAYS_PATH_OUT = "clustered_days.csv"
 
 
 # UTILS
@@ -35,8 +35,6 @@ def config_plotly():
                                       api_key=PLOTLY_API_KEY)
 
 
-def read_from_hdf():
-    return pd.HDFStore(DB_PATH)
 
 
 # PLOTS
@@ -47,7 +45,7 @@ def plot_vectors(days, peak="PM"):
     color_scale = colorlover.scales['5']['qual']['Dark2']
 
     data = list()
-    top_size = days[7].max()
+    top_size = days['7'].max()
     for index, row in days.iterrows():
         desc = str(index) + " cluster_id" + str(row['cluster_id'])
         data.append(Scattermapbox(
@@ -57,7 +55,7 @@ def plot_vectors(days, peak="PM"):
             text=desc,
             name=desc,
             opacity = 0.7,
-            line=Line(width=int(_scaler * row[7]/top_size),
+            line=Line(width=int(_scaler * row['7']/top_size),
                       color=color_scale[int(row['cluster_id'])])))
 
     data = Data(data)
@@ -88,14 +86,14 @@ def plot_cluster(days, param="End", peak="AM", marker_size_scale=30):
     color_scale = colorlover.scales['5']['qual']['Set1']
 
     data = list()
-    top_size = days[7].max()
+    top_size = days['7'].max()
     for cluster in days.cluster_id.unique():
         data.append(Scattermapbox(
             lat=days[days.cluster_id == cluster][param + "_Lat_mean" + peak],
             lon=days[days.cluster_id == cluster][param + "_Lon_mean" + peak],
             mode='markers',
             marker=Marker(
-                size=days[days.cluster_id == cluster][7] / top_size * marker_size_scale,
+                size=days[days.cluster_id == cluster]['7'] / top_size * marker_size_scale,
                 color=color_scale[cluster]
             ),
             text="CL: "+str(cluster),
@@ -218,18 +216,24 @@ def cosine_vect(o, d, index):
 
 #MAIN PROCEDURE
 def main():
-    days = cluster_agglomeration(dfs['days'], 5)[0]
+    # read
+    df = pd.read_csv(DAYS_PATH_IN)
+    df = df.set_index(df['index'])
+    del df['index']
 
+    # cluster
+    days = cluster_agglomeration(df, 5)[0]
     days['holidays'] = make_holidays(days)
-    days.to_csv("clustered_days.csv")
-    ssw
 
-    # resulting clusters
+    # save
+    days.to_csv(CLUSTERED_DAYS_PATH_OUT)
+
+    # results
     cls = days.cluster_id.unique()
     print(cls)
 
     # prepare rows
-    cols = [i for i in range(24)]
+    cols = [str(i) for i in range(24)]
 
     # prepare figures
     fig, axes = plt.subplots(nrows=len(cls), ncols=1)
@@ -249,6 +253,7 @@ def main():
     py.plot(pyplot_data, filename="Clusters holidays")
 
     #plotly days of week
+    pyplot_data = list()
     for cl in cls:
          cld = days['weekday'][days.cluster_id == cl]
          pyplot_data.append(go.Box(y=cld,
@@ -292,7 +297,7 @@ def main():
     axes[-1].set_xlabel("h", fontsize=8)
 
     plt.show()
-    dfs.close()
+
 
 
 def make_holidays(days):
@@ -310,7 +315,5 @@ def make_holidays(days):
 
 
 if __name__ == "__main__":
-    # read hdf
-    dfs = read_from_hdf()
     main()
 
