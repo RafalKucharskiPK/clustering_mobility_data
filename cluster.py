@@ -40,6 +40,9 @@ def cluster_agglomeration(df, n_clusters):
 def custom_affinity(M):
     return np.array([[custom_distance_function(o,d) for o in M] for d in M])
 
+
+
+
 def custom_distance_function(o, d):
     """
     24      'totals',

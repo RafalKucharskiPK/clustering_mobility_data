@@ -14,6 +14,14 @@ def main():
     df = df.set_index(df['index'])
     del df['index']
 
+    col_dict = dict()
+    for i, col in enumerate(df.columns):
+        col_dict[i] = col
+    col_dict_invert = {v: k for k, v in col_dict.items()}
+    print(col_dict)
+    print(col_dict_invert)
+    quit()
+
     # cluster
     days = cluster_agglomeration(df, 5)[0]
     days['holidays'] = make_holidays(days)

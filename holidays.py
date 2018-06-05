@@ -13,4 +13,3 @@ def make_holidays(days):
 
     return days.apply(lambda x: assign_holiday(x), axis = 1)
 
-holidays.UnitedStates()
