@@ -16,6 +16,21 @@ from sklearn.cluster import AgglomerativeClustering
 from scipy.spatial.distance import cosine
 
 
+def cl_metrics(df_mtx, clusters):
+    labels = clusters.labels_
+    n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+
+    metric = dict()
+    metric['nclusters'] = n_clusters_
+    metric['silhouette'] = metrics.silhouette_score(df_mtx, labels)
+    metric['calinski_harabaz'] = metrics.calinski_harabaz_score(df_mtx, labels)
+
+    print(metric)
+
+    # print('Estimated number of clusters: %d' % n_clusters_)
+    # print("Silhouette Coefficient: %0.3f"
+    #       % metrics.silhouette_score(df_mtx, labels))
+
 
 
 
@@ -25,6 +40,7 @@ def cluster_agglomeration(df, n_clusters):
     # metric = metrics.pairwise.pairwise_kernels(days, metric=my_dist)
     clusters = AgglomerativeClustering(n_clusters=n_clusters, affinity=custom_affinity, linkage = 'average')
     clusters = clusters.fit(df_mtx)
+    cl_metrics(df_mtx,clusters)
     labels = clusters.labels_
     df["cluster_id"] = labels
 

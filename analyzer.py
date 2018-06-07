@@ -1,13 +1,11 @@
 import pandas as pd
 import os
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import requests
 import ssl
 import zipfile
 
-
-AM = [8, 9]
-PM = [16, 17, 18, 19]
+from config import *
 
 
 def zip_url_to_df(url):
@@ -31,35 +29,36 @@ def zip_url_to_df(url):
     zip_ref.extractall()
     zip_ref.close()
     os.remove(file_name)  # we delete the .zip file (the csv remains on disk)
-    df = index_by_datetime(pd.read_csv(csv_file_name),  date_col="starttime",format="%m/%d/%Y %H:%M:%S")
+    df = index_by_datetime(pd.read_csv(csv_file_name), date_col="starttime", _format=TIME_FORMAT)
     os.remove(csv_file_name)
     return df
 
 
-def index_by_datetime(_df, date_col=None,format = None):
+def index_by_datetime(_df, date_col=None, _format=None):
     """
     changes a given column data type to datetime
     and overwrites this as an index.
     :param _df:
     :param date_col: column where date is stored
     :return: transformed data frame
-    :param format: optional format if known, makes the prcess way faster
+    :param _format: optional format if known, makes the prcess way faster
     :return:
     """
     if date_col is None:
-        _df.index = pd.to_datetime(_df.index, format=format)
+        _df.index = pd.to_datetime(_df.index, format=_format)
     else:
-        _df[date_col] = pd.to_datetime(_df[date_col], format=format)
+        _df[date_col] = pd.to_datetime(_df[date_col], format=_format)
         _df.index = _df[date_col]
         del _df[date_col]
     return _df
 
 
-def read_urls(urls, plot = False):
+def read_urls(urls, plot=False):
     _df = list()
     x = list()
     y = list()
     for url in urls:
+        print(url)
         _df.append(zip_url_to_df(url))
         x.append(url)
         y.append(_df[-1].shape[0])
@@ -79,6 +78,7 @@ def read_urls(urls, plot = False):
     del _df['start station name']
     del _df['end station name']
     return _df
+
 
 def describe_trip_groups(_trips, groups='days'):
     """
@@ -154,11 +154,25 @@ def describe_trip_groups(_trips, groups='days'):
         col_dict[i] = col
     col_dict_invert = {v: k for k, v in col_dict.items()}
 
+    days.to_csv(DAYS_PATH_IN)
+    days.totals.plot()
+    plt.show()
     return days, col_dict, col_dict_invert
 
+
+def prepare(urls=None):
+    if urls is None:
+        urls = URLS
+    df = read_urls(URLS)
+    df.to_csv(TRIPS_PATH_IN)
+
+
 if __name__ == "__main__":
-    urls = [ "https://s3.amazonaws.com/tripdata/2017{}-citibike-tripdata.csv.zip".format(str(i).zfill(2)) for i in range(1,13)]
-    df = read_urls(["https://s3.amazonaws.com/tripdata/201804-citibike-tripdata.csv.zip"])
-    #df = read_urls(urls)
-    print(df.head())
-    print(df.shape)
+    # DOWNLOAD
+    if False:
+        prepare()
+    else:
+        # MAKE_DAYS
+        df = index_by_datetime(pd.read_csv(TRIPS_PATH_IN),"starttime",TIME_FORMAT)
+        describe_trip_groups(df)
+

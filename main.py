@@ -2,9 +2,8 @@ from plot import *
 from holidays import *
 from cluster import *
 
-
-DAYS_PATH_IN = "days_in.csv"
-CLUSTERED_DAYS_PATH_OUT = "days_out.csv"
+from config import *
+from analyzer import prepare, describe_trip_groups
 
 
 #MAIN PROCEDURE
@@ -14,16 +13,10 @@ def main():
     df = df.set_index(df['index'])
     del df['index']
 
-    col_dict = dict()
-    for i, col in enumerate(df.columns):
-        col_dict[i] = col
-    col_dict_invert = {v: k for k, v in col_dict.items()}
-    print(col_dict)
-    print(col_dict_invert)
-    quit()
-
     # cluster
-    days = cluster_agglomeration(df, 5)[0]
+    for i in range(3,9):
+        days = cluster_agglomeration(df, i)[0]
+    quit()
     days['holidays'] = make_holidays(days)
 
     # save
@@ -100,9 +93,8 @@ def main():
     plt.show()
 
 
-
-
-
 if __name__ == "__main__":
+    #prepare()
+    #describe_trip_groups()
     main()
 
