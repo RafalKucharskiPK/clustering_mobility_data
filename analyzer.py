@@ -34,7 +34,7 @@ def zip_url_to_df(url):
     return df
 
 
-def index_by_datetime(_df, date_col=None, _format=None):
+def index_by_datetime(_df, date_col='starttime', _format=None):
     """
     changes a given column data type to datetime
     and overwrites this as an index.
@@ -80,12 +80,15 @@ def read_urls(urls, plot=False):
     return _df
 
 
-def describe_trip_groups(_trips, groups='days'):
+def describe_trip_groups(_trips = None, groups='days'):
     """
     Here we descripbe the days from the trips table
     :param _trips: pd.DataFrame
     :return: pd.DataFrame
     """
+    if _trips is None:
+        _trips = index_by_datetime(pd.read_csv(TRIPS_PATH_IN))
+
     if groups == 'days':
         by1 = [_trips.index.date, _trips.index.hour]
         by2 = [_trips.index.date]

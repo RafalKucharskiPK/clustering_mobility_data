@@ -23,6 +23,8 @@ def cl_metrics(df_mtx, clusters):
     metric = dict()
     metric['nclusters'] = n_clusters_
     metric['silhouette'] = metrics.silhouette_score(df_mtx, labels)
+    print(metric)
+    print(metrics.silhouette_samples(df_mtx,labels).shape)
     metric['calinski_harabaz'] = metrics.calinski_harabaz_score(df_mtx, labels)
 
     print(metric)
@@ -36,7 +38,7 @@ def cl_metrics(df_mtx, clusters):
 
 #CLUSTERING METHODS
 def cluster_agglomeration(df, n_clusters):
-    df_mtx = df.as_matrix()
+    df_mtx = df.values
     # metric = metrics.pairwise.pairwise_kernels(days, metric=my_dist)
     clusters = AgglomerativeClustering(n_clusters=n_clusters, affinity=custom_affinity, linkage = 'average')
     clusters = clusters.fit(df_mtx)

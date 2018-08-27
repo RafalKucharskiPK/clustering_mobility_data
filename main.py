@@ -1,100 +1,47 @@
 from plot import *
 from holidays import *
 from cluster import *
+from visualizer import *
 
 from config import *
 from analyzer import prepare, describe_trip_groups
 
 
 #MAIN PROCEDURE
-def main():
+def make_clusters(_n=6):
     # read
     df = pd.read_csv(DAYS_PATH_IN)
     df = df.set_index(df['index'])
+    df.drop('2018-03-21', axis = 0, inplace=True)
+    df.drop('2018-03-22', axis = 0, inplace = True)
+    df.fillna(0, inplace = True)
     del df['index']
+    null_columns = df.columns[df.isnull().any()]
+    #print(null_columns)
+    #print(df[df.isnull().any(axis=1)][null_columns].head())
+    for null_column in null_columns:
+        print("Missing value of \t{}\t on \t{}".format(null_column,df[df[null_column].isnull()].index.values[0]))
 
     # cluster
-    for i in range(3,9):
-        days = cluster_agglomeration(df, i)[0]
-    quit()
+    # for i in range(3,9):
+    #     days = cluster_agglomeration(df, i)[0]
+    # quit()
+    days = cluster_agglomeration(df, _n)[0]
     days['holidays'] = make_holidays(days)
 
     # save
     days.to_csv(CLUSTERED_DAYS_PATH_OUT)
 
-    # results
     cls = days.cluster_id.unique()
     print(cls)
-
-    # prepare rows
-    cols = [str(i) for i in range(24)]
-
-    # prepare figures
-    fig, axes = plt.subplots(nrows=len(cls), ncols=1)
-    pyplot_data = list()
-    config_plotly()
-
-    # plotly holidays.
-    for cl in cls:
-        cld = days['holidays'][days.cluster_id == cl]
-        pyplot_data.append(go.Box(y=cld,
-                                  name=cl,
-                                  jitter=0.3,
-                                  pointpos=-1.8,
-                                  boxpoints='all'
-                                  )
-                           )
-    py.plot(pyplot_data, filename="Clusters holidays")
-
-    #plotly days of week
-    pyplot_data = list()
-    for cl in cls:
-         cld = days['weekday'][days.cluster_id == cl]
-         pyplot_data.append(go.Box(y=cld,
-                                   name=cl,
-                                   jitter=0.3,
-                                   pointpos=-1.8,
-                                   boxpoints='all'
-                                   )
-                            )
-    py.plot(pyplot_data, filename="Clusters days of week")
+    return days
 
 
-    #plotly totals
-    pyplot_data = list()
-    config_plotly()
-    for cl in cls:
-        cld = days['totals'][days.cluster_id == cl]
-        pyplot_data.append(go.Box(y=cld,
-                                  name=cl,
-                                  jitter=0.3,
-                                  pointpos=-1.8,
-                                  boxpoints='all'
-                                  )
-                           )
-    py.plot(pyplot_data, filename="Clusters total trips")
-
-    plot_vectors(days, peak = "AM")  # plot vectors
-    plot_vectors(days, peak = "PM")  # plot vectors
-    plot_cluster(days, param="Start", peak = "AM")  # plot clusters
-    plot_cluster(days, param="Start", peak = "PM")  # plot clusters
-    plot_cluster(days, param="End", peak = "AM")  # plot clusters
-    plot_cluster(days, param="End", peak = "PM")  # plot clusters
-
-    i = 0
-    # cld = days['totals'][days.cluster_id == cl]
-    for cl in cls:
-        days[cols][days.cluster_id == cl].T.plot(ax=axes[i], c='black', legend=False, lw=0.2)
-        axes[i].set_ylabel("trips", fontsize=8)
-        axes[i].set_title("cluster " + str(cl), fontsize=8)
-        i += 1
-    axes[-1].set_xlabel("h", fontsize=8)
-
-    plt.show()
 
 
 if __name__ == "__main__":
     #prepare()
-    #describe_trip_groups()
-    main()
+    describe_trip_groups()
+    make_clusters(6)
+    visualize()
 
