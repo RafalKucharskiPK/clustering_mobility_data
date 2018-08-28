@@ -40,7 +40,7 @@ def make_clusters(_n=6):
 
 
 if __name__ == "__main__":
-    #prepare()
+    prepare()
     describe_trip_groups()
     make_clusters(6)
     visualize()
