@@ -1,5 +1,5 @@
 
-PLOTLY_API_KEY = "w1LROCX3bYA8amfuLA4g"
+PLOTLY_API_KEY = "wYBVjzEQ7vTR5vNPSvq7"
 
 import matplotlib.pyplot as plt
 import plotly.graph_objs as go

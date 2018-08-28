@@ -78,3 +78,8 @@ def visualize(_plotly=False,_plot=True):
         axes[-1].set_xlabel("h", fontsize=8)
 
         plt.show()
+
+if __name__ == "__main__":
+    days = pd.read_csv(CLUSTERED_DAYS_PATH_OUT)
+    config_plotly()
+    plot_vectors(days, peak="AM")  # plot vectors
