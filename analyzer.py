@@ -54,6 +54,12 @@ def index_by_datetime(_df, date_col='starttime', _format=None):
 
 
 def read_urls(urls, plot=False):
+    """
+    read multiple ulr datasets
+    :param urls:
+    :param plot:
+    :return:
+    """
     _df = list()
     x = list()
     y = list()

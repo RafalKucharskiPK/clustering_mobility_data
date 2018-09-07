@@ -1,6 +1,7 @@
 import holidays
 
 def make_holidays(days):
+    """ something stopped working """
     us_holidays = list() # holidays.UnitedStates()
 
     def assign_holiday(row):
