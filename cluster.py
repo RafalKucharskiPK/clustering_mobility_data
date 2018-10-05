@@ -9,6 +9,7 @@
 
 import numpy as np
 import pandas
+import pandas as pd
 
 from scipy.stats.stats import pearsonr
 
@@ -32,6 +33,7 @@ def cl_metrics(df_mtx, clusters):
     metric['calinski_harabaz'] = metrics.calinski_harabaz_score(df_mtx, labels)
 
     print(metric)
+    return metric
 
     # print('Estimated number of clusters: %d' % n_clusters_)
     # print("Silhouette Coefficient: %0.3f"
@@ -161,5 +163,6 @@ def make_clusters(_n=6):
     days.to_csv(CLUSTERED_DAYS_PATH_OUT)
 
     cls = days.cluster_id.unique()
+
     print(cls)
     return days
