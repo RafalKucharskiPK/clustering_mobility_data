@@ -7,8 +7,8 @@ from analyzer import prepare, describe_trip_groups
 
 
 if __name__ == "__main__":
-    #prepare()
-    #describe_trip_groups()
-    make_clusters(6)
-    visualize()
+    #prepare(_plot=True)
+    describe_trip_groups()
+    #make_clusters(6)
+    #visualize()
 
