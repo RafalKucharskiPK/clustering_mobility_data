@@ -55,7 +55,7 @@ def index_by_datetime(_df, date_col='starttime', _format=None):
 
 def read_urls(urls, plot=False):
     """
-    read multiple ulr datasets
+    read multiple url datasets
     :param urls:
     :param plot:
     :return:
@@ -169,10 +169,10 @@ def describe_trip_groups(_trips = None, groups='days'):
     return days, col_dict, col_dict_invert
 
 
-def prepare(urls=None):
+def prepare(urls=None, plot = True):
     if urls is None:
         urls = URLS
-    df = read_urls(URLS)
+    df = read_urls(urls, plot)
     df.to_csv(TRIPS_PATH_IN)
 
 
